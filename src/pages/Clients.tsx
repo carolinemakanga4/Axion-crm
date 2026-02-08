@@ -97,7 +97,9 @@ export const Clients = () => {
           icon={Users}
           title="No clients found"
           description={searchQuery ? 'Try adjusting your search query.' : 'Get started by creating your first client.'}
-          action={isAdmin ? { label: 'Add Client', onClick: handleCreate } : undefined}
+          action={isAdmin ? { label: "Add Client", onClick: handleCreate } : undefined}
+
+
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
