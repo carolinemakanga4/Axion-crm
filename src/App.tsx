@@ -12,6 +12,8 @@ import { Projects } from './pages/Projects';
 import { Invoices } from './pages/Invoices';
 import { Notes } from './pages/Notes';
 import { Settings } from './pages/Settings';
+import Landing from "./pages/Landing";
+
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
@@ -30,6 +32,8 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
+
       <Route
         path="/login"
         element={
