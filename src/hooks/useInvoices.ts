@@ -62,10 +62,21 @@ export const useCreateInvoice = () => {
 
   return useMutation({
     mutationFn: async (invoice: Omit<Invoice, 'id' | 'created_at' | 'updated_at' | 'subtotal' | 'tax_amount' | 'total'>) => {
-      const { data, error } = await supabase.from('invoices').insert(invoice).select().single();
+      const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) throw error;
-      return data as Invoice;
+if (!user) {
+  throw new Error("User not logged in");
+}
+
+await supabase
+  .from("invoices")
+  .insert({
+    ...invoice,
+    user_id: user.id,
+  });
+
+
+     
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
