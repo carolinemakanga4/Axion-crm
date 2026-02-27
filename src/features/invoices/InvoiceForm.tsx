@@ -1,3 +1,4 @@
+import PaymentsPanel from './PaymentsPanel';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -18,12 +19,8 @@ const invoiceSchema = z.object({
 
 type InvoiceFormData = z.infer<typeof invoiceSchema>;
 
-interface InvoiceFormProps {
-  invoice?: Invoice;
-  onSubmit: (data: Omit<Invoice, 'id' | 'org_id' | 'created_at' | 'updated_at' | 'subtotal' | 'tax_amount' | 'total'>) => void;
-  onCancel: () => void;
-  isLoading?: boolean;
-}
+
+
 
 export const InvoiceForm = ({ invoice, onSubmit, onCancel, isLoading }: InvoiceFormProps) => {
   const { data: clients } = useClients();
@@ -201,6 +198,7 @@ export const InvoiceForm = ({ invoice, onSubmit, onCancel, isLoading }: InvoiceF
           {isLoading ? 'Saving...' : invoice ? 'Update' : 'Create'}
         </button>
       </div>
+      {invoice?.id ? <PaymentsPanel invoiceId={invoice.id} /> : null}
     </form>
   );
 };

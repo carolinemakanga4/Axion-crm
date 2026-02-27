@@ -64,7 +64,19 @@ export interface Invoice {
   notes: string | null;
   created_at: string;
   updated_at: string;
+  amount_paid: number;
+  balance_due: number;
 }
+export type InvoiceUpsert = {
+  invoice_number: string;
+  client_id: string;
+  project_id?: string | null;
+  issue_date: string;
+  due_date: string;
+  status: InvoiceStatus;
+  tax_rate?: number;
+  notes?: string | null;
+};
 
 export interface InvoiceLineItem {
   id: string;
@@ -103,3 +115,14 @@ export interface DashboardStats {
   totalRevenue: number;
   pendingRevenue: number;
 }
+export type Payment = {
+  id: string;
+  org_id: string;
+  invoice_id: string;
+  amount: number;
+  method?: string | null;
+  reference?: string | null;
+  paid_at: string; // ISO
+  created_at: string;
+  created_by?: string | null;
+};
