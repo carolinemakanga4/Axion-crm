@@ -2,7 +2,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { InvoiceLineItem } from '../../types';
-import { useEffect } from 'react';
+import {
+  FormActions,
+  FormCancelButton,
+  FormField,
+  FormInput,
+  FormSection,
+  FormSubmitButton,
+} from '../../components/forms';
 
 const lineItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
@@ -54,73 +61,56 @@ export const InvoiceLineItemForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-          Description <span className="text-red-500">*</span>
-        </label>
-        <input
-          {...register('description')}
-          type="text"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-        {errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>
-        )}
-      </div>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <FormSection title="Line Item Details">
+        <div className="space-y-4">
+          <FormField id="description" label="Description" required error={errors.description?.message}>
+            <FormInput
+              id="description"
+              type="text"
+              invalid={Boolean(errors.description)}
+              {...register('description')}
+            />
+          </FormField>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">
-            Quantity <span className="text-red-500">*</span>
-          </label>
-          <input
-            {...register('quantity')}
-            type="number"
-            step="0.01"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-          />
-          {errors.quantity && <p className="mt-1 text-sm text-red-600">{errors.quantity.message}</p>}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FormField id="quantity" label="Quantity" required error={errors.quantity?.message}>
+              <FormInput
+                id="quantity"
+                type="number"
+                step="0.01"
+                invalid={Boolean(errors.quantity)}
+                {...register('quantity')}
+              />
+            </FormField>
+            <FormField id="unit_price" label="Unit Price" required error={errors.unit_price?.message}>
+              <FormInput
+                id="unit_price"
+                type="number"
+                step="0.01"
+                invalid={Boolean(errors.unit_price)}
+                {...register('unit_price')}
+              />
+            </FormField>
+          </div>
         </div>
-        <div>
-          <label htmlFor="unit_price" className="block text-sm font-medium text-gray-700">
-            Unit Price <span className="text-red-500">*</span>
-          </label>
-          <input
-            {...register('unit_price')}
-            type="number"
-            step="0.01"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-          />
-          {errors.unit_price && (
-            <p className="mt-1 text-sm text-red-600">{errors.unit_price.message}</p>
-          )}
-        </div>
-      </div>
+      </FormSection>
 
-      <div className="bg-gray-50 p-3 rounded-md">
-        <div className="flex justify-between text-sm">
-          <span className="font-medium text-gray-700">Line Total:</span>
-          <span className="font-semibold text-gray-900">${lineTotal.toFixed(2)}</span>
+      <FormSection title="Summary" className="bg-white">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-medium text-gray-700">Line Total:</span>
+            <span className="font-semibold text-gray-900">${lineTotal.toFixed(2)}</span>
+          </div>
         </div>
-      </div>
+      </FormSection>
 
-      <div className="flex justify-end gap-3 pt-4 border-t">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
-        >
+      <FormActions>
+        <FormCancelButton onClick={onCancel}>Cancel</FormCancelButton>
+        <FormSubmitButton disabled={isLoading}>
           {isLoading ? 'Saving...' : lineItem ? 'Update' : 'Add'}
-        </button>
-      </div>
+        </FormSubmitButton>
+      </FormActions>
     </form>
   );
 };

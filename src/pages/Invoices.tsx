@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useInvoices, useCreateInvoice, useUpdateInvoice, useDeleteInvoice } from '../hooks/useInvoices';
 import { useAuth } from '../contexts/AuthContext';
-import { Invoice } from '../types';
+import { Invoice, InvoiceUpsert } from '../types';
 import { Modal } from '../components/Modal';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { EmptyState } from '../components/EmptyState';
@@ -38,9 +38,7 @@ export const Invoices = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleSubmit = async (
-    data: Omit<Invoice, 'id' | 'org_id' | 'created_at' | 'updated_at' | 'subtotal' | 'tax_amount' | 'total'>
-  ) => {
+  const handleSubmit = async (data: InvoiceUpsert) => {
     if (selectedInvoice) {
       await updateInvoice.mutateAsync({ id: selectedInvoice.id, ...data });
     } else {

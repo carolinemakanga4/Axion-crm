@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabaseClient';
-import { Invoice, InvoiceLineItem, InvoiceWithItems } from '../types';
+import { Invoice, InvoiceLineItem, InvoiceUpsert, InvoiceWithItems } from '../types';
 import { toast } from '../utils/toast';
 
 export const useInvoices = (clientId?: string, searchQuery?: string) => {
@@ -61,7 +61,7 @@ export const useCreateInvoice = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (invoice: Omit<Invoice, 'id' | 'created_at' | 'updated_at' | 'subtotal' | 'tax_amount' | 'total'>) => {
+    mutationFn: async (invoice: InvoiceUpsert & { org_id: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
 
 if (!user) {

@@ -2,6 +2,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Client } from '../../types';
+import {
+  FormActions,
+  FormCancelButton,
+  FormField,
+  FormInput,
+  FormSection,
+  FormSubmitButton,
+  FormTextarea,
+} from '../../components/forms';
 
 const clientSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -52,91 +61,44 @@ export const ClientForm = ({ client, onSubmit, onCancel, isLoading }: ClientForm
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-          Name <span className="text-red-500">*</span>
-        </label>
-        <input
-          {...register('name')}
-          type="text"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-        {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
-      </div>
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+      <FormSection title="Contact Information" description="Primary details for your client record.">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField id="name" label="Name" required error={errors.name?.message}>
+            <FormInput id="name" type="text" invalid={Boolean(errors.name)} {...register('name')} />
+          </FormField>
+          <FormField id="email" label="Email" error={errors.email?.message}>
+            <FormInput id="email" type="email" invalid={Boolean(errors.email)} {...register('email')} />
+          </FormField>
+          <FormField id="phone" label="Phone" className="md:col-span-2">
+            <FormInput id="phone" type="tel" {...register('phone')} />
+          </FormField>
+        </div>
+      </FormSection>
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email
-        </label>
-        <input
-          {...register('email')}
-          type="email"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-        {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-      </div>
+      <FormSection title="Company Details">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField id="company" label="Company">
+            <FormInput id="company" type="text" {...register('company')} />
+          </FormField>
+          <FormField id="address" label="Address" className="md:col-span-2">
+            <FormTextarea id="address" rows={3} {...register('address')} />
+          </FormField>
+        </div>
+      </FormSection>
 
-      <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-          Phone
-        </label>
-        <input
-          {...register('phone')}
-          type="tel"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-      </div>
+      <FormSection title="Internal Notes">
+        <FormField id="notes" label="Notes">
+          <FormTextarea id="notes" rows={4} {...register('notes')} />
+        </FormField>
+      </FormSection>
 
-      <div>
-        <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-          Company
-        </label>
-        <input
-          {...register('company')}
-          type="text"
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-          Address
-        </label>
-        <textarea
-          {...register('address')}
-          rows={3}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
-          Notes
-        </label>
-        <textarea
-          {...register('notes')}
-          rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-        />
-      </div>
-
-      <div className="flex justify-end gap-3 pt-4 border-t">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-        >
-          Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50"
-        >
+      <FormActions>
+        <FormCancelButton onClick={onCancel}>Cancel</FormCancelButton>
+        <FormSubmitButton disabled={isLoading}>
           {isLoading ? 'Saving...' : client ? 'Update' : 'Create'}
-        </button>
-      </div>
+        </FormSubmitButton>
+      </FormActions>
     </form>
   );
 };
