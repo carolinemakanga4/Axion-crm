@@ -14,6 +14,7 @@ export const Topbar = ({ onMenuClick, searchQuery, onSearchChange, showSearch = 
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const displayName = user?.profile?.full_name || user?.email || 'there';
 
   const handleSignOut = async () => {
     await signOut();
@@ -21,10 +22,10 @@ export const Topbar = ({ onMenuClick, searchQuery, onSearchChange, showSearch = 
   };
 
   return (
-    <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 flex h-20 shrink-0 items-center gap-x-4 border-b border-white/10 bg-slate-950/75 px-4 backdrop-blur-xl sm:gap-x-6 sm:px-6 lg:px-8">
       <button
         type="button"
-        className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+        className="-m-2.5 rounded-lg p-2.5 text-slate-300 transition hover:bg-white/5 hover:text-white lg:hidden"
         onClick={() => {
           onMenuClick();
           setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -39,18 +40,26 @@ export const Topbar = ({ onMenuClick, searchQuery, onSearchChange, showSearch = 
       </button>
 
       <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+        <div className="hidden min-w-0 flex-1 items-center lg:flex">
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-400">Revenue Ops</p>
+            <p className="truncate text-sm font-medium text-slate-100">
+              Welcome back, {displayName}
+            </p>
+          </div>
+        </div>
         {showSearch && onSearchChange && (
           <form className="relative flex flex-1" action="#" method="GET">
             <label htmlFor="search-field" className="sr-only">
               Search
             </label>
             <Search
-              className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 pl-3"
+              className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 pl-3 text-slate-500"
               aria-hidden="true"
             />
             <input
               id="search-field"
-              className="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
+              className="block h-11 w-full rounded-xl border border-white/10 bg-white/5 py-0 pl-10 pr-3 text-sm text-slate-100 placeholder:text-slate-400 focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
               placeholder="Search..."
               type="search"
               name="search"
@@ -62,22 +71,22 @@ export const Topbar = ({ onMenuClick, searchQuery, onSearchChange, showSearch = 
       </div>
 
       <div className="flex items-center gap-x-4 lg:gap-x-6">
-        <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
+        <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-white/10" aria-hidden="true" />
         <div className="flex items-center gap-x-4 lg:gap-x-6">
           <div className="hidden lg:block">
-            <span className="text-sm text-gray-700">
-              {user?.profile?.full_name || user?.email}
+            <span className="text-sm text-slate-300">
+              {displayName}
             </span>
           </div>
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-cyan-300/25 bg-cyan-400/10 px-3 py-2 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200/40 hover:bg-cyan-300/15"
           >
             <LogOut className="h-4 w-4" />
             <span className="hidden sm:inline">Sign out</span>
           </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 };

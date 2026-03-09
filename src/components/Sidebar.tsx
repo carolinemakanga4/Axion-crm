@@ -1,64 +1,87 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
-  Users,
-  FolderKanban,
   FileText,
+  FolderKanban,
+  LayoutDashboard,
   Settings,
   StickyNote,
-} from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
+  Users,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 import logo from "../assets/axion-logo.png";
 
-
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Clients', href: '/clients', icon: Users },
-  { name: 'Projects', href: '/projects', icon: FolderKanban },
-  { name: 'Invoices', href: '/invoices', icon: FileText },
-  { name: 'Notes', href: '/notes', icon: StickyNote },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Clients", href: "/clients", icon: Users },
+  { name: "Projects", href: "/projects", icon: FolderKanban },
+  { name: "Invoices", href: "/invoices", icon: FileText },
+  { name: "Notes", href: "/notes", icon: StickyNote },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  mobile?: boolean;
+  onNavigate?: () => void;
+}
+
+export const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
   const location = useLocation();
   const { user } = useAuth();
+  const displayName = user?.profile?.full_name || user?.email || "Axion User";
+  const initials = displayName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
-    <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
-      <div className="flex-1 flex flex-col min-h-0 bg-gray-900">
-        <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-          <div className="flex items-center flex-shrink-0 px-4">
-            <div className="flex items-center gap-3 px-2 py-3 rounded-md">
-  <img
-    src={logo}
-    alt="axion-logo"
-    className="h-12 w-12 object-contain"
-  />
+    <aside
+      className={`${
+        mobile ? "flex h-full w-72" : "hidden md:fixed md:inset-y-0 md:flex md:w-72"
+      }`}
+    >
+      <div className="relative flex min-h-0 flex-1 flex-col border-r border-white/10 bg-slate-950/95 backdrop-blur-xl">
+        <div className="pointer-events-none absolute left-8 top-4 h-28 w-28 rounded-full bg-cyan-500/15 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-14 left-10 h-24 w-24 rounded-full bg-blue-500/15 blur-2xl" />
 
-  <span className="text-white text-xl font-semibold trackin-wide">
-    Axion CRM
-  </span>
-</div>
-
+        <div className="relative flex flex-1 flex-col overflow-y-auto px-4 pb-4 pt-5">
+          <div className="flex items-center px-2">
+            <div className="inline-flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5">
+              <img src={logo} alt="axion-logo" className="h-10 w-10 object-contain" />
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-cyan-200">Axion</p>
+                <p className="text-base font-semibold text-white">CRM Platform</p>
+              </div>
+            </div>
           </div>
-          <nav className="mt-5 flex-1 px-2 space-y-1">
+
+          <div className="mt-6 px-2">
+            <p className="text-xs uppercase tracking-[0.18em] text-slate-500">Workspace</p>
+          </div>
+
+          <nav className="mt-3 flex-1 space-y-1.5 px-2">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href || location.pathname.startsWith(item.href + '/');
+              const isActive =
+                location.pathname === item.href ||
+                location.pathname.startsWith(item.href + "/");
               return (
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={onNavigate}
                   className={`${
                     isActive
-                      ? 'bg-gray-800 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                  } group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors`}
+                      ? "border-cyan-300/35 bg-gradient-to-r from-cyan-400/20 to-blue-500/10 text-white shadow-lg shadow-cyan-950/30"
+                      : "border-transparent text-slate-300 hover:border-white/10 hover:bg-white/5 hover:text-white"
+                  } group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition`}
                 >
                   <item.icon
                     className={`${
-                      isActive ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'
-                    } mr-3 flex-shrink-0 h-6 w-6`}
+                      isActive
+                        ? "text-cyan-200"
+                        : "text-slate-500 group-hover:text-cyan-200"
+                    } h-5 w-5 flex-shrink-0 transition`}
                   />
                   {item.name}
                 </Link>
@@ -66,21 +89,24 @@ export const Sidebar = () => {
             })}
           </nav>
         </div>
-        <div className="flex-shrink-0 flex bg-gray-800 p-4">
-          <div className="flex-shrink-0 w-full group block">
-            <div className="flex items-center">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
-                  {user?.profile?.full_name || user?.email}
-                </p>
-                <p className="text-xs text-gray-400 truncate capitalize">
-                  {user?.profile?.role || 'user'}
-                </p>
-              </div>
+
+        <div className="relative border-t border-white/10 bg-white/5 p-4">
+          <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/70 p-3">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-300 to-blue-500 text-xs font-semibold text-slate-950">
+              {initials}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-medium text-white">{displayName}</p>
+              <p className="truncate text-xs capitalize text-slate-400">
+                {user?.profile?.role || "user"}
+              </p>
             </div>
+            <span className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-cyan-200">
+              Live
+            </span>
           </div>
         </div>
       </div>
-    </div>
+    </aside>
   );
 };
