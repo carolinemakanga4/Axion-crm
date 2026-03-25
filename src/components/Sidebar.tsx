@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   FileText,
   FolderKanban,
@@ -25,7 +25,6 @@ interface SidebarProps {
 }
 
 export const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
-  const location = useLocation();
   const { user } = useAuth();
   const displayName = user?.profile?.full_name || user?.email || "Axion User";
   const initials = displayName
@@ -38,7 +37,7 @@ export const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
   return (
     <aside
       className={`${
-        mobile ? "flex h-full w-72" : "hidden md:fixed md:inset-y-0 md:flex md:w-72"
+        mobile ? "flex h-full w-72" : "hidden md:fixed md:inset-y-0 md:z-50 md:flex md:w-72"
       }`}
     >
       <div className="relative flex min-h-0 flex-1 flex-col border-r border-white/10 bg-slate-950/95 backdrop-blur-xl">
@@ -62,29 +61,32 @@ export const Sidebar = ({ mobile = false, onNavigate }: SidebarProps) => {
 
           <nav className="mt-3 flex-1 space-y-1.5 px-2">
             {navigation.map((item) => {
-              const isActive =
-                location.pathname === item.href ||
-                location.pathname.startsWith(item.href + "/");
               return (
-                <Link
+                <NavLink
                   key={item.name}
                   to={item.href}
                   onClick={onNavigate}
-                  className={`${
-                    isActive
-                      ? "border-cyan-300/35 bg-gradient-to-r from-cyan-400/20 to-blue-500/10 text-white shadow-lg shadow-cyan-950/30"
-                      : "border-transparent text-slate-300 hover:border-white/10 hover:bg-white/5 hover:text-white"
-                  } group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition`}
-                >
-                  <item.icon
-                    className={`${
+                  className={({ isActive }) =>
+                    `${
                       isActive
-                        ? "text-cyan-200"
-                        : "text-slate-500 group-hover:text-cyan-200"
-                    } h-5 w-5 flex-shrink-0 transition`}
-                  />
-                  {item.name}
-                </Link>
+                        ? "border-cyan-300/35 bg-gradient-to-r from-cyan-400/20 to-blue-500/10 text-white shadow-lg shadow-cyan-950/30"
+                        : "border-transparent text-slate-300 hover:border-white/10 hover:bg-white/5 hover:text-white"
+                    } group flex items-center gap-3 rounded-xl border px-3 py-2.5 text-sm font-medium transition`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <item.icon
+                        className={`${
+                          isActive
+                            ? "text-cyan-200"
+                            : "text-slate-500 group-hover:text-cyan-200"
+                        } h-5 w-5 flex-shrink-0 transition`}
+                      />
+                      {item.name}
+                    </>
+                  )}
+                </NavLink>
               );
             })}
           </nav>

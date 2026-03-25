@@ -11,41 +11,26 @@ export interface AuthUser {
 export const auth = {
   async signUp(email: string, password: string, fullName: string, orgName: string) {
     try {
-      // Sign up the user
+      // Supabase auth trigger is the source of truth for creating org/profile.
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName,
+            org_name: orgName,
+          },
+        },
       });
 
       if (authError) throw authError;
       if (!authData.user) throw new Error('Failed to create user');
 
-      // Create organization
-      const { data: orgData, error: orgError } = await supabase
-        .from('orgs')
-        .insert({ name: orgName })
-        .select()
-        .single();
-
-      if (orgError) throw orgError;
-      if (!orgData) throw new Error('Failed to create organization');
-
-      // Create profile
-      const { error: profileError } = await supabase.from('profiles').insert({
-        id: authData.user.id,
-        email,
-        full_name: fullName,
-        role: 'admin',
-        org_id: orgData.id,
-      });
-
-      if (profileError) throw profileError;
-
       toast.success('Account created successfully! Please check your email to verify your account.');
       return { user: authData.user, error: null };
     } catch (error: any) {
       toast.error(error.message || 'Failed to create account');
-      return { user: null, error };
+      throw error;
     }
   },
 

@@ -1,30 +1,27 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { InvoiceLineItem } from '../../types';
-import {
-  FormActions,
-  FormCancelButton,
-  FormField,
-  FormInput,
-  FormSection,
-  FormSubmitButton,
-} from '../../components/forms';
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { InvoiceLineItem } from "../../types";
 
 const lineItemSchema = z.object({
-  description: z.string().min(1, 'Description is required'),
-  quantity: z.string().min(1, 'Quantity is required'),
-  unit_price: z.string().min(1, 'Unit price is required'),
+  description: z.string().min(1, "Description is required"),
+  quantity: z.string().min(1, "Quantity is required"),
+  unit_price: z.string().min(1, "Unit price is required"),
 });
 
 type LineItemFormData = z.infer<typeof lineItemSchema>;
 
 interface InvoiceLineItemFormProps {
   lineItem?: InvoiceLineItem;
-  onSubmit: (data: Omit<InvoiceLineItem, 'id' | 'invoice_id' | 'line_total' | 'created_at' | 'updated_at'>) => void;
+  onSubmit: (
+    data: Omit<InvoiceLineItem, "id" | "invoice_id" | "line_total" | "created_at" | "updated_at">,
+  ) => Promise<void>;
   onCancel: () => void;
   isLoading?: boolean;
 }
+
+const inputBaseClass =
+  "h-11 w-full rounded-xl border border-white/15 bg-slate-950/80 px-3.5 text-sm text-slate-100 placeholder:text-slate-500 transition focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30";
 
 export const InvoiceLineItemForm = ({
   lineItem,
@@ -48,12 +45,12 @@ export const InvoiceLineItemForm = ({
       : undefined,
   });
 
-  const quantity = watch('quantity');
-  const unitPrice = watch('unit_price');
-  const lineTotal = quantity && unitPrice ? parseFloat(quantity) * parseFloat(unitPrice) : 0;
+  const quantity = Number(watch("quantity") || 0);
+  const unitPrice = Number(watch("unit_price") || 0);
+  const lineTotal = quantity * unitPrice;
 
-  const handleFormSubmit = (data: LineItemFormData) => {
-    onSubmit({
+  const handleFormSubmit = async (data: LineItemFormData) => {
+    await onSubmit({
       description: data.description,
       quantity: parseFloat(data.quantity),
       unit_price: parseFloat(data.unit_price),
@@ -61,56 +58,86 @@ export const InvoiceLineItemForm = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      <FormSection title="Line Item Details">
-        <div className="space-y-4">
-          <FormField id="description" label="Description" required error={errors.description?.message}>
-            <FormInput
-              id="description"
-              type="text"
-              invalid={Boolean(errors.description)}
-              {...register('description')}
-            />
-          </FormField>
+    <form
+      noValidate
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleSubmit(handleFormSubmit)(event);
+      }}
+      className="space-y-5"
+    >
+      <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+        <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-slate-200">
+          Description
+        </label>
+        <input
+          id="description"
+          type="text"
+          className={inputBaseClass}
+          placeholder="e.g. CRM implementation support"
+          {...register("description")}
+        />
+        {errors.description?.message ? (
+          <p className="mt-1.5 text-sm text-red-300">{errors.description.message}</p>
+        ) : null}
+      </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <FormField id="quantity" label="Quantity" required error={errors.quantity?.message}>
-              <FormInput
-                id="quantity"
-                type="number"
-                step="0.01"
-                invalid={Boolean(errors.quantity)}
-                {...register('quantity')}
-              />
-            </FormField>
-            <FormField id="unit_price" label="Unit Price" required error={errors.unit_price?.message}>
-              <FormInput
-                id="unit_price"
-                type="number"
-                step="0.01"
-                invalid={Boolean(errors.unit_price)}
-                {...register('unit_price')}
-              />
-            </FormField>
-          </div>
+      <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-slate-900/60 p-5 sm:grid-cols-2">
+        <div>
+          <label htmlFor="quantity" className="mb-1.5 block text-sm font-medium text-slate-200">
+            Quantity
+          </label>
+          <input
+            id="quantity"
+            type="number"
+            step="0.01"
+            className={inputBaseClass}
+            {...register("quantity")}
+          />
+          {errors.quantity?.message ? (
+            <p className="mt-1.5 text-sm text-red-300">{errors.quantity.message}</p>
+          ) : null}
         </div>
-      </FormSection>
-
-      <FormSection title="Summary" className="bg-white">
-        <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700">Line Total:</span>
-            <span className="font-semibold text-gray-900">${lineTotal.toFixed(2)}</span>
-          </div>
+        <div>
+          <label htmlFor="unit_price" className="mb-1.5 block text-sm font-medium text-slate-200">
+            Unit Price
+          </label>
+          <input
+            id="unit_price"
+            type="number"
+            step="0.01"
+            className={inputBaseClass}
+            {...register("unit_price")}
+          />
+          {errors.unit_price?.message ? (
+            <p className="mt-1.5 text-sm text-red-300">{errors.unit_price.message}</p>
+          ) : null}
         </div>
-      </FormSection>
+      </div>
 
-      <FormActions>
-        <FormCancelButton onClick={onCancel}>Cancel</FormCancelButton>
-        <FormSubmitButton disabled={isLoading}>
-          {isLoading ? 'Saving...' : lineItem ? 'Update' : 'Add'}
-        </FormSubmitButton>
-      </FormActions>
+      <div className="rounded-xl border border-cyan-300/25 bg-cyan-400/10 px-4 py-3">
+        <p className="text-xs uppercase tracking-[0.14em] text-cyan-200">Line total</p>
+        <p className="mt-1 text-xl font-semibold text-cyan-100">
+          ${lineTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </p>
+      </div>
+
+      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="inline-flex h-11 items-center justify-center rounded-xl border border-white/15 bg-white/5 px-4 text-sm font-semibold text-slate-200 transition hover:bg-white/10"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-4 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:from-cyan-300 hover:to-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isLoading ? "Saving..." : lineItem ? "Update line item" : "Add line item"}
+        </button>
+      </div>
     </form>
   );
 };

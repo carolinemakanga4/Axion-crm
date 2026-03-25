@@ -10,6 +10,7 @@ import { Clients } from './pages/Clients';
 import { ClientDetail } from './pages/ClientDetail';
 import { Projects } from './pages/Projects';
 import { Invoices } from './pages/Invoices';
+import { InvoiceDetail } from './pages/InvoiceDetail';
 import { Notes } from './pages/Notes';
 import { Settings } from './pages/Settings';
 import Landing from "./pages/Landing";
@@ -96,6 +97,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <MainLayout>
               <Invoices />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/invoices/:id"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <InvoiceDetail />
             </MainLayout>
           </ProtectedRoute>
         }

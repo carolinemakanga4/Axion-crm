@@ -1,0 +1,642 @@
+[
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "Admins can delete clients in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "Admins can update clients in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "Users can create clients in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(org_id = get_user_org_id())"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "Users can view clients in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "clients_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "clients_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "clients_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "policyname": "clients_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "Admins can delete line items for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = invoice_line_items.invoice_id) AND (invoices.org_id = get_user_org_id())))) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "Admins can update line items for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = invoice_line_items.invoice_id) AND (invoices.org_id = get_user_org_id())))) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "Users can create line items for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = invoice_line_items.invoice_id) AND (invoices.org_id = get_user_org_id()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "Users can view line items for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = invoice_line_items.invoice_id) AND (invoices.org_id = get_user_org_id()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "ili_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "ili_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "ili_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "ili_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "invoice_line_items_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "invoice_line_items_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "invoice_line_items_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "policyname": "invoice_line_items_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))",
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices i\n  WHERE ((i.id = invoice_line_items.invoice_id) AND (i.user_id = auth.uid()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "Admins can delete invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "Admins can update invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "Users can create invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(org_id = get_user_org_id())"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "Users can view invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "invoices_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "invoices_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "invoices_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "policyname": "invoices_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Admins can delete any note in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Admins can update any note in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Users can create notes in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "((org_id = get_user_org_id()) AND (created_by = auth.uid()))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Users can delete their own notes",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((org_id = get_user_org_id()) AND (created_by = auth.uid()))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Users can update their own notes",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND (created_by = auth.uid()))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "Users can view notes in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "notes_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "notes_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "notes_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "policyname": "notes_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "Admins can update their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "Users can view their own org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "orgs_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "orgs_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "orgs_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "policyname": "orgs_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "Admins can delete payments for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = payments.invoice_id) AND (invoices.org_id = get_user_org_id())))) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "Admins can update payments for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = payments.invoice_id) AND (invoices.org_id = get_user_org_id())))) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "Users can create payments for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = payments.invoice_id) AND (invoices.org_id = get_user_org_id()))))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "Users can view payments for invoices in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(EXISTS ( SELECT 1\n   FROM invoices\n  WHERE ((invoices.id = payments.invoice_id) AND (invoices.org_id = get_user_org_id()))))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "payments_delete_org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "payments_insert_org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "payments_select_org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "policyname": "payments_update_org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))",
+    "with_check": "(org_id IN ( SELECT profiles.org_id\n   FROM profiles\n  WHERE (profiles.id = auth.uid())))"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "policyname": "Admins can update any profile in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "policyname": "Users can update their own profile",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "(id = auth.uid())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "policyname": "Users can view profiles in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "policyname": "profiles_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(id = auth.uid())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "Admins can delete projects in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "DELETE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "Admins can update projects in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "UPDATE",
+    "qual": "((org_id = get_user_org_id()) AND is_admin())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "Users can create projects in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(org_id = get_user_org_id())"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "Users can view projects in their org",
+    "permissive": "PERMISSIVE",
+    "roles": "{public}",
+    "cmd": "SELECT",
+    "qual": "(org_id = get_user_org_id())",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "projects_delete_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "DELETE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "projects_insert_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "INSERT",
+    "qual": null,
+    "with_check": "(auth.uid() = user_id)"
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "projects_select_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "SELECT",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": null
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "policyname": "projects_update_own",
+    "permissive": "PERMISSIVE",
+    "roles": "{authenticated}",
+    "cmd": "UPDATE",
+    "qual": "(auth.uid() = user_id)",
+    "with_check": "(auth.uid() = user_id)"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "schemaname": "public",
+    "tablename": "clients",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoice_line_items",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "invoices",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "notes",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "orgs",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "payments",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "profiles",
+    "rowsecurity": true
+  },
+  {
+    "schemaname": "public",
+    "tablename": "projects",
+    "rowsecurity": true
+  }
+]

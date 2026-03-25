@@ -1,0 +1,107 @@
+[
+  {
+    "table_name": "clients",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "clients_org_id_fkey"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "column_name": "invoice_id",
+    "foreign_table_name": "invoices",
+    "foreign_column_name": "id",
+    "constraint_name": "invoice_line_items_invoice_id_fkey"
+  },
+  {
+    "table_name": "invoices",
+    "column_name": "client_id",
+    "foreign_table_name": "clients",
+    "foreign_column_name": "id",
+    "constraint_name": "invoices_client_id_fkey"
+  },
+  {
+    "table_name": "invoices",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "invoices_org_id_fkey"
+  },
+  {
+    "table_name": "invoices",
+    "column_name": "project_id",
+    "foreign_table_name": "projects",
+    "foreign_column_name": "id",
+    "constraint_name": "invoices_project_id_fkey"
+  },
+  {
+    "table_name": "notes",
+    "column_name": "client_id",
+    "foreign_table_name": "clients",
+    "foreign_column_name": "id",
+    "constraint_name": "notes_client_id_fkey"
+  },
+  {
+    "table_name": "notes",
+    "column_name": "created_by",
+    "foreign_table_name": "profiles",
+    "foreign_column_name": "id",
+    "constraint_name": "notes_created_by_fkey"
+  },
+  {
+    "table_name": "notes",
+    "column_name": "invoice_id",
+    "foreign_table_name": "invoices",
+    "foreign_column_name": "id",
+    "constraint_name": "notes_invoice_id_fkey"
+  },
+  {
+    "table_name": "notes",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "notes_org_id_fkey"
+  },
+  {
+    "table_name": "notes",
+    "column_name": "project_id",
+    "foreign_table_name": "projects",
+    "foreign_column_name": "id",
+    "constraint_name": "notes_project_id_fkey"
+  },
+  {
+    "table_name": "payments",
+    "column_name": "invoice_id",
+    "foreign_table_name": "invoices",
+    "foreign_column_name": "id",
+    "constraint_name": "payments_invoice_id_fkey"
+  },
+  {
+    "table_name": "payments",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "payments_org_id_fkey"
+  },
+  {
+    "table_name": "profiles",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "profiles_org_id_fkey"
+  },
+  {
+    "table_name": "projects",
+    "column_name": "client_id",
+    "foreign_table_name": "clients",
+    "foreign_column_name": "id",
+    "constraint_name": "projects_client_id_fkey"
+  },
+  {
+    "table_name": "projects",
+    "column_name": "org_id",
+    "foreign_table_name": "orgs",
+    "foreign_column_name": "id",
+    "constraint_name": "projects_org_id_fkey"
+  }
+]

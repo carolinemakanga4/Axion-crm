@@ -22,7 +22,7 @@ export const MainLayout = ({
     <div className="relative flex h-screen overflow-hidden bg-slate-950 text-slate-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.08),transparent_32%),radial-gradient(circle_at_80%_8%,rgba(59,130,246,0.18),transparent_34%),linear-gradient(to_bottom,#020617,#020617)]" />
       <Sidebar />
-      <div className="relative flex w-0 flex-1 flex-col overflow-hidden md:pl-72">
+      <div className="relative flex w-0 flex-1 flex-col overflow-hidden md:ml-72">
         <Topbar
           onMenuClick={() => setSidebarOpen((open) => !open)}
           showSearch={showSearch}

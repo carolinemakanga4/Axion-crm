@@ -1,0 +1,70 @@
+[
+  {
+    "routine_name": "calculate_invoice_totals",
+    "routine_definition": "\r\nDECLARE\r\n  v_subtotal DECIMAL(12, 2);\r\n  v_tax_amount DECIMAL(12, 2);\r\n  v_total DECIMAL(12, 2);\r\nBEGIN\r\n  -- Calculate subtotal from line items\r\n  SELECT COALESCE(SUM(line_total), 0) INTO v_subtotal\r\n  FROM invoice_line_items\r\n  WHERE invoice_id = COALESCE(NEW.invoice_id, OLD.invoice_id);\r\n  \r\n  -- Get tax rate from invoice\r\n  SELECT tax_rate INTO v_tax_amount\r\n  FROM invoices\r\n  WHERE id = COALESCE(NEW.invoice_id, OLD.invoice_id);\r\n  \r\n  -- Calculate tax and total\r\n  v_tax_amount := v_subtotal * (COALESCE(v_tax_amount, 0) / 100);\r\n  v_total := v_subtotal + v_tax_amount;\r\n  \r\n  -- Update invoice\r\n  UPDATE invoices\r\n  SET subtotal = v_subtotal,\r\n      tax_amount = v_tax_amount,\r\n      total = v_total\r\n  WHERE id = COALESCE(NEW.invoice_id, OLD.invoice_id);\r\n  \r\n  RETURN NEW;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "get_user_org_id",
+    "routine_definition": "\r\n  SELECT org_id FROM profiles WHERE id = auth.uid();\r\n"
+  },
+  {
+    "routine_name": "handle_invoice_total_recalc",
+    "routine_definition": "\r\nBEGIN\r\n  PERFORM public.recalculate_invoice_payment_totals(NEW.id);\r\n  RETURN NEW;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "handle_new_user",
+    "routine_definition": "\r\ndeclare\r\n  new_org_id uuid;\r\n  org_name text;\r\nbegin\r\n  -- Friendly default org name\r\n  org_name := coalesce(new.raw_user_meta_data->>'full_name', new.email, 'New Org');\r\n\r\n  -- Create an org for this user\r\n  insert into public.orgs (id, name)\r\n  values (gen_random_uuid(), org_name)\r\n  returning id into new_org_id;\r\n\r\n  -- Create the user's profile linked to that org\r\n  insert into public.profiles (id, email, role, org_id)\r\n  values (new.id, new.email, 'admin', new_org_id)\r\n  on conflict (id) do update\r\n  set email = excluded.email;\r\n\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "handle_new_user_create_org_and_profile",
+    "routine_definition": "\r\ndeclare\r\n  v_org_id uuid;\r\n  v_email text;\r\nbegin\r\n  v_email := new.email;\r\n\r\n  -- 1) create org for this user\r\n  insert into public.orgs (name)\r\n  values (coalesce(v_email, 'New Org'))\r\n  returning id into v_org_id;\r\n\r\n  -- 2) create profile\r\n  insert into public.profiles (id, org_id, email, role, full_name)\r\n  values (\r\n    new.id,\r\n    v_org_id,\r\n    v_email,\r\n    'admin',\r\n    coalesce(new.raw_user_meta_data->>'full_name', null)\r\n  )\r\n  on conflict (id) do update\r\n    set email = excluded.email;\r\n\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "handle_payment_invoice_recalc",
+    "routine_definition": "\r\nBEGIN\r\n  IF TG_OP = 'DELETE' THEN\r\n    PERFORM public.recalculate_invoice_payment_totals(OLD.invoice_id);\r\n    RETURN OLD;\r\n  END IF;\r\n\r\n  PERFORM public.recalculate_invoice_payment_totals(NEW.invoice_id);\r\n\r\n  IF TG_OP = 'UPDATE' AND OLD.invoice_id IS DISTINCT FROM NEW.invoice_id THEN\r\n    PERFORM public.recalculate_invoice_payment_totals(OLD.invoice_id);\r\n  END IF;\r\n\r\n  RETURN NEW;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "is_admin",
+    "routine_definition": "\r\n  SELECT role = 'admin' FROM profiles WHERE id = auth.uid();\r\n"
+  },
+  {
+    "routine_name": "recalc_invoice_totals",
+    "routine_definition": "\r\nDECLARE\r\n  v_subtotal numeric;\r\n  v_tax_rate numeric;\r\n  v_tax_amount numeric;\r\n  v_total numeric;\r\nBEGIN\r\n  -- Sum line items\r\n  SELECT COALESCE(SUM(line_total), 0)\r\n  INTO v_subtotal\r\n  FROM public.invoice_line_items\r\n  WHERE invoice_id = p_invoice_id;\r\n\r\n  -- Get tax_rate\r\n  SELECT COALESCE(tax_rate, 0)\r\n  INTO v_tax_rate\r\n  FROM public.invoices\r\n  WHERE id = p_invoice_id;\r\n\r\n  -- Compute totals\r\n  v_tax_amount := v_subtotal * v_tax_rate;\r\n  v_total := v_subtotal + v_tax_amount;\r\n\r\n  -- Update invoice\r\n  UPDATE public.invoices\r\n  SET\r\n    subtotal   = v_subtotal,\r\n    tax_amount = v_tax_amount,\r\n    total      = v_total,\r\n    updated_at = NOW()\r\n  WHERE id = p_invoice_id;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "recalculate_invoice_payment_totals",
+    "routine_definition": "\r\nDECLARE\r\n  v_total numeric(12,2) := 0;\r\n  v_paid numeric(12,2) := 0;\r\nBEGIN\r\n  SELECT COALESCE(i.total, 0)\r\n  INTO v_total\r\n  FROM public.invoices i\r\n  WHERE i.id = p_invoice_id;\r\n\r\n  SELECT COALESCE(SUM(p.amount), 0)\r\n  INTO v_paid\r\n  FROM public.payments p\r\n  WHERE p.invoice_id = p_invoice_id;\r\n\r\n  UPDATE public.invoices i\r\n  SET\r\n    amount_paid = v_paid,\r\n    balance_due = GREATEST(v_total - v_paid, 0)\r\n  WHERE i.id = p_invoice_id;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "recalculate_invoice_payments",
+    "routine_definition": "\r\ndeclare\r\n  v_total numeric := 0;\r\n  v_paid numeric := 0;\r\n  v_balance numeric := 0;\r\n  v_due_date date;\r\n  v_now date := (now() at time zone 'utc')::date;\r\n  v_status text;\r\nbegin\r\n  select coalesce(total, 0), due_date\r\n    into v_total, v_due_date\r\n  from public.invoices\r\n  where id = p_invoice_id;\r\n\r\n  select coalesce(sum(amount), 0)\r\n    into v_paid\r\n  from public.payments\r\n  where invoice_id = p_invoice_id;\r\n\r\n  v_balance := v_total - v_paid;\r\n\r\n  -- status rules\r\n  if v_total = 0 then\r\n    v_status := 'draft';\r\n  elsif v_balance <= 0 then\r\n    v_status := 'paid';\r\n  elsif v_paid > 0 and v_balance > 0 then\r\n    v_status := 'partially_paid';\r\n  else\r\n    if v_due_date is not null and v_due_date < v_now then\r\n      v_status := 'overdue';\r\n    else\r\n      v_status := 'sent';\r\n    end if;\r\n  end if;\r\n\r\n  update public.invoices\r\n  set amount_paid = v_paid,\r\n      balance_due = greatest(v_balance, 0),\r\n      status = v_status,\r\n      updated_at = now()\r\n  where id = p_invoice_id;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "set_invoice_line_total",
+    "routine_definition": "\r\nbegin\r\n  -- Normalize nulls to 0 to avoid null math\r\n  new.quantity := coalesce(new.quantity, 0);\r\n  new.unit_price := coalesce(new.unit_price, 0);\r\n\r\n  new.line_total := new.quantity * new.unit_price;\r\n\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "set_line_total",
+    "routine_definition": "\r\nBEGIN\r\n  NEW.quantity := COALESCE(NEW.quantity, 0);\r\n  NEW.unit_price := COALESCE(NEW.unit_price, 0);\r\n  NEW.line_total := NEW.quantity * NEW.unit_price;\r\n  RETURN NEW;\r\nEND;\r\n"
+  },
+  {
+    "routine_name": "set_user_id",
+    "routine_definition": "\r\nbegin\r\n  if new.user_id is null then\r\n    new.user_id := auth.uid();\r\n  end if;\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "touch_invoice_totals_from_invoice",
+    "routine_definition": "\r\nbegin\r\n  perform public.recalculate_invoice_totals(new.id);\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "touch_invoice_totals_from_line_items",
+    "routine_definition": "\r\ndeclare\r\n  v_old uuid;\r\n  v_new uuid;\r\nbegin\r\n  -- Determine old/new invoice ids based on operation\r\n  if (tg_op = 'DELETE') then\r\n    v_old := old.invoice_id;\r\n    perform public.recalculate_invoice_totals(v_old);\r\n    return old;\r\n  end if;\r\n\r\n  v_new := new.invoice_id;\r\n\r\n  if (tg_op = 'UPDATE') then\r\n    v_old := old.invoice_id;\r\n\r\n    -- If invoice_id changed, recalc both invoices\r\n    if v_old is distinct from v_new then\r\n      perform public.recalculate_invoice_totals(v_old);\r\n    end if;\r\n  end if;\r\n\r\n  perform public.recalculate_invoice_totals(v_new);\r\n  return new;\r\nend;\r\n"
+  },
+  {
+    "routine_name": "trg_recalc_invoice_on_payment",
+    "routine_definition": "\r\nbegin\r\n  perform public.recalculate_invoice_payments(coalesce(new.invoice_id, old.invoice_id));\r\n  return coalesce(new, old);\r\nend;\r\n"
+  },
+  {
+    "routine_name": "update_updated_at_column",
+    "routine_definition": "\r\nBEGIN\r\n  NEW.updated_at = NOW();\r\n  RETURN NEW;\r\nEND;\r\n"
+  }
+]

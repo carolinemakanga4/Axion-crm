@@ -1,0 +1,198 @@
+[
+  {
+    "table_name": "clients",
+    "trigger_name": "set_user_id_clients",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "clients",
+    "trigger_name": "update_clients_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_recalc_invoice_totals_from_line_items",
+    "event_manipulation": "DELETE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION touch_invoice_totals_from_line_items()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_recalc_invoice_totals_from_line_items",
+    "event_manipulation": "UPDATE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION touch_invoice_totals_from_line_items()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_recalc_invoice_totals_from_line_items",
+    "event_manipulation": "INSERT",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION touch_invoice_totals_from_line_items()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_set_invoice_line_total",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_invoice_line_total()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_set_invoice_line_total",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_invoice_line_total()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_set_line_total",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_line_total()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "trg_set_line_total",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_line_total()"
+  },
+  {
+    "table_name": "invoice_line_items",
+    "trigger_name": "update_invoice_line_items_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  },
+  {
+    "table_name": "invoices",
+    "trigger_name": "set_user_id_invoices",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "invoices",
+    "trigger_name": "trg_invoices_recalculate_balance_due",
+    "event_manipulation": "UPDATE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION handle_invoice_total_recalc()"
+  },
+  {
+    "table_name": "invoices",
+    "trigger_name": "trg_invoices_recalculate_balance_due",
+    "event_manipulation": "INSERT",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION handle_invoice_total_recalc()"
+  },
+  {
+    "table_name": "invoices",
+    "trigger_name": "trg_recalc_invoice_totals_on_tax_rate",
+    "event_manipulation": "UPDATE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION touch_invoice_totals_from_invoice()"
+  },
+  {
+    "table_name": "invoices",
+    "trigger_name": "update_invoices_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  },
+  {
+    "table_name": "notes",
+    "trigger_name": "set_user_id_notes",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "notes",
+    "trigger_name": "update_notes_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  },
+  {
+    "table_name": "orgs",
+    "trigger_name": "set_user_id_orgs",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "payments_after_change",
+    "event_manipulation": "INSERT",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION trg_recalc_invoice_on_payment()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "payments_after_change",
+    "event_manipulation": "DELETE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION trg_recalc_invoice_on_payment()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "payments_after_change",
+    "event_manipulation": "UPDATE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION trg_recalc_invoice_on_payment()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "trg_payments_recalculate_invoice_totals",
+    "event_manipulation": "DELETE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION handle_payment_invoice_recalc()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "trg_payments_recalculate_invoice_totals",
+    "event_manipulation": "INSERT",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION handle_payment_invoice_recalc()"
+  },
+  {
+    "table_name": "payments",
+    "trigger_name": "trg_payments_recalculate_invoice_totals",
+    "event_manipulation": "UPDATE",
+    "action_timing": "AFTER",
+    "action_statement": "EXECUTE FUNCTION handle_payment_invoice_recalc()"
+  },
+  {
+    "table_name": "profiles",
+    "trigger_name": "set_user_id_profiles",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "profiles",
+    "trigger_name": "update_profiles_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  },
+  {
+    "table_name": "projects",
+    "trigger_name": "set_user_id_projects",
+    "event_manipulation": "INSERT",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION set_user_id()"
+  },
+  {
+    "table_name": "projects",
+    "trigger_name": "update_projects_updated_at",
+    "event_manipulation": "UPDATE",
+    "action_timing": "BEFORE",
+    "action_statement": "EXECUTE FUNCTION update_updated_at_column()"
+  }
+]

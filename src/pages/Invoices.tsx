@@ -65,28 +65,28 @@ export const Invoices = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage your invoices and billing</p>
+          <h1 className="text-3xl font-semibold text-white">Invoices</h1>
+          <p className="mt-1 text-sm text-slate-400">Manage billing, line items, and invoice documents.</p>
         </div>
         {isAdmin && (
           <button
             onClick={handleCreate}
-            className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-4 py-2 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:from-cyan-300 hover:to-blue-400"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-4 w-4" />
             Create Invoice
           </button>
         )}
       </div>
 
       {/* Search */}
-      <div className="bg-white shadow rounded-lg p-4">
+      <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
         <input
           type="text"
           placeholder="Search invoices by number..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+          className="h-11 w-full rounded-xl border border-white/15 bg-slate-950/80 px-4 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
         />
       </div>
 
@@ -101,95 +101,95 @@ export const Invoices = () => {
           action={isAdmin ? { label: 'Create Invoice', onClick: handleCreate } : undefined}
         />
       ) : (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-lg shadow-slate-950/40">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-slate-950/80">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Invoice #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Client
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Issue Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Due Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Amount
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
                   Status
                 </th>
-                {isAdmin && (
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                )}
+                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Actions
+                </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/5 bg-slate-900/40">
               {invoices.map((invoice: any) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tr key={invoice.id} className="hover:bg-white/5">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-white">
                     {invoice.invoice_number}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-300">
                     {invoice.clients?.name}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-300">
                     {format(new Date(invoice.issue_date), 'MMM dd, yyyy')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-300">
                     {format(new Date(invoice.due_date), 'MMM dd, yyyy')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  <td className="whitespace-nowrap px-6 py-4 text-sm font-semibold text-cyan-100">
                     ${invoice.total.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="whitespace-nowrap px-6 py-4">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${
                         invoice.status === 'paid'
-                          ? 'bg-green-100 text-green-800'
+                          ? 'border-emerald-300/30 bg-emerald-400/10 text-emerald-200'
                           : invoice.status === 'sent'
-                          ? 'bg-blue-100 text-blue-800'
+                          ? 'border-blue-300/30 bg-blue-400/10 text-blue-200'
                           : invoice.status === 'overdue'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'border-red-300/30 bg-red-400/10 text-red-200'
+                          : 'border-slate-300/20 bg-slate-400/10 text-slate-200'
                       }`}
                     >
                       {invoice.status}
                     </span>
                   </td>
-                  {isAdmin && (
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          to={`/invoices/${invoice.id}`}
-                          className="text-primary-600 hover:text-primary-900"
-                          aria-label="View invoice"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
+                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link
+                        to={`/invoices/${invoice.id}`}
+                        className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-slate-300 transition hover:text-cyan-200"
+                        aria-label="View invoice"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Link>
+                      {isAdmin && (
+                        <>
                         <button
                           onClick={() => handleEdit(invoice)}
-                          className="text-gray-400 hover:text-primary-600 transition-colors"
+                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-slate-300 transition hover:text-cyan-200"
                           aria-label="Edit invoice"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(invoice)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
+                          className="rounded-lg border border-white/10 bg-white/5 p-1.5 text-slate-300 transition hover:text-red-300"
                           aria-label="Delete invoice"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
-                      </div>
-                    </td>
-                  )}
+                        </>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -205,7 +205,7 @@ export const Invoices = () => {
           setSelectedInvoice(null);
         }}
         title={selectedInvoice ? 'Edit Invoice' : 'Create New Invoice'}
-        size="lg"
+        size="xl"
       >
         <InvoiceForm
           invoice={selectedInvoice || undefined}

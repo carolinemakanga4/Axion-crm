@@ -1,0 +1,26 @@
+[
+  {
+    "table_name": "clients"
+  },
+  {
+    "table_name": "invoice_line_items"
+  },
+  {
+    "table_name": "invoices"
+  },
+  {
+    "table_name": "notes"
+  },
+  {
+    "table_name": "orgs"
+  },
+  {
+    "table_name": "payments"
+  },
+  {
+    "table_name": "profiles"
+  },
+  {
+    "table_name": "projects"
+  }
+]

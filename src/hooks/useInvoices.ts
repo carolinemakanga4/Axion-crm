@@ -64,19 +64,21 @@ export const useCreateInvoice = () => {
     mutationFn: async (invoice: InvoiceUpsert & { org_id: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
 
-if (!user) {
-  throw new Error("User not logged in");
-}
+      if (!user) {
+        throw new Error('User not logged in');
+      }
 
-await supabase
-  .from("invoices")
-  .insert({
-    ...invoice,
-    user_id: user.id,
-  });
+      const { data, error } = await supabase
+        .from('invoices')
+        .insert({
+          ...invoice,
+          user_id: user.id,
+        })
+        .select()
+        .single();
 
-
-     
+      if (error) throw error;
+      return data as Invoice;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
@@ -155,6 +157,10 @@ export const useCreateInvoiceLineItem = () => {
 
   return useMutation({
     mutationFn: async (item: Omit<InvoiceLineItem, 'id' | 'created_at' | 'updated_at'>) => {
+      if (!item.invoice_id) {
+        throw new Error('Missing invoice_id for line item creation');
+      }
+
       const { data, error } = await supabase
         .from('invoice_line_items')
         .insert(item)
@@ -162,6 +168,7 @@ export const useCreateInvoiceLineItem = () => {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Line item was not returned after creation');
       return data as InvoiceLineItem;
     },
     onSuccess: (data) => {
@@ -189,6 +196,7 @@ export const useUpdateInvoiceLineItem = () => {
         .single();
 
       if (error) throw error;
+      if (!data) throw new Error('Line item update did not return a record');
       return data as InvoiceLineItem;
     },
     onSuccess: (data) => {

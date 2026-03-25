@@ -1,11 +1,17 @@
-import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useAddPayment, usePayments } from '../../hooks/usePayments';
-import { toast } from '../../utils/toast';
+import { useState } from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import { useAddPayment, usePayments } from "../../hooks/usePayments";
+import { toast } from "../../utils/toast";
 
 type PaymentsPanelProps = {
   invoiceId: string;
 };
+
+const formatCurrency = (value: number) =>
+  `$${Number(value || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 
 export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
   const { user } = useAuth();
@@ -14,9 +20,9 @@ export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
   const { data: payments = [], isLoading } = usePayments(invoiceId);
   const addPayment = useAddPayment();
 
-  const [amount, setAmount] = useState<string>('');
-  const [method, setMethod] = useState<string>('eft');
-  const [reference, setReference] = useState<string>('');
+  const [amount, setAmount] = useState<string>("");
+  const [method, setMethod] = useState<string>("eft");
+  const [reference, setReference] = useState<string>("");
 
   const onAdd = async () => {
     if (!orgId) {
@@ -26,7 +32,7 @@ export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
 
     const num = Number(amount);
     if (!Number.isFinite(num) || num <= 0) {
-      toast.error('Enter a valid payment amount');
+      toast.error("Enter a valid payment amount");
       return;
     }
 
@@ -41,30 +47,38 @@ export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
         created_by: user?.id ?? null,
       });
 
-      setAmount('');
-      setReference('');
-      toast.success('Payment added');
-    } catch (e: any) {
-      toast.error(e?.message ?? 'Failed to add payment');
+      setAmount("");
+      setReference("");
+      toast.success("Payment added");
+    } catch (e: unknown) {
+      const error = e as { message?: string };
+      toast.error(error?.message ?? "Failed to add payment");
     }
   };
 
   return (
-    <div style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid #e5e7eb' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <h3 style={{ fontWeight: 600, margin: 0 }}>Payments</h3>
+    <section className="rounded-2xl border border-white/10 bg-slate-900/50 p-5 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-base font-semibold text-white">Payments</h3>
+          <p className="text-sm text-slate-400">Record invoice payments and references.</p>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 12, marginBottom: 12 }}>
+      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-[1fr_180px_1fr_auto]">
         <input
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Amount"
           inputMode="decimal"
-          style={{ padding: 8, width: 120 }}
+          className="h-11 rounded-xl border border-white/15 bg-slate-950/80 px-3.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
         />
 
-        <select value={method} onChange={(e) => setMethod(e.target.value)} style={{ padding: 8 }}>
+        <select
+          value={method}
+          onChange={(e) => setMethod(e.target.value)}
+          className="h-11 rounded-xl border border-white/15 bg-slate-950/80 px-3.5 text-sm text-slate-100 focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
+        >
           <option value="eft">EFT</option>
           <option value="cash">Cash</option>
           <option value="card">Card</option>
@@ -75,44 +89,58 @@ export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
           value={reference}
           onChange={(e) => setReference(e.target.value)}
           placeholder="Reference (optional)"
-          style={{ padding: 8, flex: 1, minWidth: 180 }}
+          className="h-11 rounded-xl border border-white/15 bg-slate-950/80 px-3.5 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-300/30"
         />
 
         <button
           type="button"
           onClick={onAdd}
           disabled={addPayment.isPending}
-          style={{ padding: '8px 12px' }}
+          className="inline-flex h-11 items-center justify-center rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 px-4 text-sm font-semibold text-slate-950 shadow-lg shadow-cyan-500/20 transition hover:from-cyan-300 hover:to-blue-400 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {addPayment.isPending ? 'Adding…' : 'Add Payment'}
+          {addPayment.isPending ? "Adding..." : "Add Payment"}
         </button>
       </div>
 
       {isLoading ? (
-        <div>Loading payments…</div>
+        <div className="mt-4 rounded-xl border border-white/10 bg-slate-950/60 p-4 text-sm text-slate-400">
+          Loading payments...
+        </div>
       ) : payments.length === 0 ? (
-        <div style={{ opacity: 0.7 }}>No payments yet.</div>
+        <div className="mt-4 rounded-xl border border-dashed border-white/15 bg-slate-950/60 p-4 text-sm text-slate-400">
+          No payments yet.
+        </div>
       ) : (
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ textAlign: 'left' }}>
-                <th style={{ padding: 8, borderBottom: '1px solid #e5e7eb' }}>Date</th>
-                <th style={{ padding: 8, borderBottom: '1px solid #e5e7eb' }}>Method</th>
-                <th style={{ padding: 8, borderBottom: '1px solid #e5e7eb' }}>Reference</th>
-                <th style={{ padding: 8, borderBottom: '1px solid #e5e7eb' }}>Amount</th>
+        <div className="mt-4 overflow-x-auto rounded-xl border border-white/10">
+          <table className="min-w-full divide-y divide-white/10">
+            <thead className="bg-slate-950/80">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Date
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Method
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Reference
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-[0.14em] text-slate-400">
+                  Amount
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {payments.map((p) => (
-                <tr key={p.id}>
-                  <td style={{ padding: 8, borderBottom: '1px solid #f3f4f6' }}>
-                    {new Date(p.paid_at).toLocaleString()}
+            <tbody className="divide-y divide-white/5 bg-slate-900/40">
+              {payments.map((payment) => (
+                <tr key={payment.id}>
+                  <td className="px-4 py-3 text-sm text-slate-300">
+                    {new Date(payment.paid_at).toLocaleString()}
                   </td>
-                  <td style={{ padding: 8, borderBottom: '1px solid #f3f4f6' }}>{p.method ?? '-'}</td>
-                  <td style={{ padding: 8, borderBottom: '1px solid #f3f4f6' }}>{p.reference ?? '-'}</td>
-                  <td style={{ padding: 8, borderBottom: '1px solid #f3f4f6' }}>
-                    {Number(p.amount).toFixed(2)}
+                  <td className="px-4 py-3 text-sm capitalize text-slate-300">
+                    {payment.method || "-"}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-300">{payment.reference || "-"}</td>
+                  <td className="px-4 py-3 text-right text-sm font-semibold text-cyan-100">
+                    {formatCurrency(payment.amount)}
                   </td>
                 </tr>
               ))}
@@ -120,6 +148,6 @@ export default function PaymentsPanel({ invoiceId }: PaymentsPanelProps) {
           </table>
         </div>
       )}
-    </div>
+    </section>
   );
 }
